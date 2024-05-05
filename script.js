@@ -61,10 +61,12 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = '';
 
-  movements.forEach(function (mov, i) {
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = ` 
     <div class="movements__row">
@@ -166,6 +168,13 @@ btnTransfer.addEventListener('click', function (e) {
   }
 });
 
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -216,3 +225,34 @@ const euroToUsd = 1.1;
 const movementsUSD = movements.map(mov => mov * euroToUsd);
 
 /////////////////////////////////////////////////
+
+const overallBalance = accounts
+  .map(acc => acc.movements)
+  .flat()
+  .reduce((acc, mov) => acc + mov, 0);
+
+// only 1 level deep
+const overallBalance1 = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((acc, mov) => acc + mov, 0);
+
+// sort method only work for stirng
+// for numbers we have to write
+// return < 0 , A, B (keep order)
+// return > 0 , B, A (switch order)
+// movements.sort((a, b) => {
+//   if (a > b) return 1;
+//   if (b > a) return -1;
+// });
+// asc
+// movements.sort((a, b) => a - b);
+// // desc
+// movements.sort((a, b) => b - a);
+
+// const x = new Array(4); // length
+// only work method 'fill'
+// x.fill(1, 3, 5); // value,strt,end
+// Array.from
+// const z = Array.from({ length: 7 }, (_, i) => i + 1);
+// querySelectorAll return node list for using the map methods we have t convert it to array
+// using Array.from same work will [...arr]
